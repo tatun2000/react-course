@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import './styles/App.css';
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
+import MySelect from './UI/select/MySelect';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -30,10 +31,33 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id));
   }
 
+  const sortPosts = (sort) =>{
+    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])));
+  }
+
   return (
     <div className="App">
         <PostForm create={createPost} />
-        <PostList posts={posts} title={'Список постов 1'} deletePost={deletePost}/>
+
+        {/* hr - это разделитель */}
+        <hr style={{margin: '15px 0'}}/> 
+        <div>
+          <MySelect
+            option={[
+              {id: 1, value: 'title', name: 'По названию'},
+              {id: 2, value: 'body', name: 'По описанию'}
+            ]}
+            defaultValue="Сортировка"
+            onChange={sortPosts}
+          />
+        </div>
+        {
+            posts.length
+            ? <PostList posts={posts} title={'Список постов'} remove={deletePost}/>
+            : <h1 style={{textAlign: 'center'}}>
+                Посты не найдены
+              </h1>
+        }
     </div>
   );
 }
