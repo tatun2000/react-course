@@ -1,8 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import './styles/App.css';
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
-import MySelect from './UI/select/MySelect';
+import PostFilter from './components/PostFilter';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -20,8 +20,25 @@ function App() {
       id: 3,
       title: 'Golang',
       body: 'Description'
-    }
+    } 
   ]);
+
+  const [filter, setFilter] = useState({sort: '', query: ''});
+
+  function getSortedPosts(){
+    console.log("GET SORTED POSTS");
+    
+    if(filter.sort){
+      return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]));
+    }
+    return posts;
+  }
+
+  const sortedPosts = useMemo(getSortedPosts, [filter.sort, posts]);
+
+  const sortedAndSearchedPosts = useMemo(() => {
+    return sortedPosts.filter(post => post.title.toLowerCase().includes(filter.query.toLowerCase()));
+  }, [filter.query, sortedPosts]);
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
@@ -31,33 +48,16 @@ function App() {
     setPosts(posts.filter(p => p.id !== post.id));
   }
 
-  const sortPosts = (sort) =>{
-    setPosts([...posts].sort((a, b) => a[sort].localeCompare(b[sort])));
-  }
-
   return (
     <div className="App">
         <PostForm create={createPost} />
-
         {/* hr - это разделитель */}
         <hr style={{margin: '15px 0'}}/> 
-        <div>
-          <MySelect
-            option={[
-              {id: 1, value: 'title', name: 'По названию'},
-              {id: 2, value: 'body', name: 'По описанию'}
-            ]}
-            defaultValue="Сортировка"
-            onChange={sortPosts}
-          />
-        </div>
-        {
-            posts.length
-            ? <PostList posts={posts} title={'Список постов'} remove={deletePost}/>
-            : <h1 style={{textAlign: 'center'}}>
-                Посты не найдены
-              </h1>
-        }
+        <PostFilter 
+          filter={filter}
+          setFilter={setFilter}
+        />
+        <PostList posts={sortedAndSearchedPosts} title={'Список постов'} remove={deletePost}/>    
     </div>
   );
 }
