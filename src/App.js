@@ -3,6 +3,8 @@ import './styles/App.css';
 import PostList from './components/PostList';
 import PostForm from './components/PostForm';
 import PostFilter from './components/PostFilter';
+import MyModal from './UI/MyModal/MyModal';
+import MyButton from './UI/button/MyButton';
 
 function App() {
   const [posts, setPosts] = useState([
@@ -24,6 +26,7 @@ function App() {
   ]);
 
   const [filter, setFilter] = useState({sort: '', query: ''});
+  const [modal, setModal] = useState(false);
 
   function getSortedPosts(){
     console.log("GET SORTED POSTS");
@@ -42,6 +45,7 @@ function App() {
 
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
+    setModal(false);
   }
 
   const deletePost = (post) => {
@@ -50,7 +54,13 @@ function App() {
 
   return (
     <div className="App">
-        <PostForm create={createPost} />
+        <MyButton style={{marginTop: 30}} onClick={() => setModal(true)}>
+          Создать пост
+        </MyButton>
+
+        <MyModal visible={modal} setVisible={setModal}>
+          <PostForm create={createPost} />
+        </MyModal>
         {/* hr - это разделитель */}
         <hr style={{margin: '15px 0'}}/> 
         <PostFilter 

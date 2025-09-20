@@ -1,0 +1,23 @@
+.myModal {
+    position: fixed;   /* фиксируем относительно окна браузера */
+    top: 0;            /* растягиваем от верхнего края */
+    bottom: 0;         /* до нижнего края */
+    right: 0;          /* до правого края */
+    left: 0;           /* и до левого */
+    display: none;     /* по умолчанию скрыто */
+    background: rgba(0, 0, 0, 0.5); /* затемняем задний фон */
+}
+
+
+.myModalContent{
+    padding: 25px;
+    background-color: white;
+    border-radius: 16px;
+    min-width: 250px;
+}
+
+.myModal.active{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
