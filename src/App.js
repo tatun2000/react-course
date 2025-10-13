@@ -8,13 +8,17 @@ import MyButton from './UI/button/MyButton';
 import { usePosts } from './hooks/usePosts';
 import PostService from './API/PostService';
 import Loader from './UI/loader/Loader';
+import { useFetching } from './hooks/useFetching';
 
 function App() {
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState({sort: '', query: ''});
   const [modal, setModal] = useState(false);
   const sortedAndSearchedPosts = usePosts(filter.sort, filter.query, posts);
-  const [isPostsLoading, setIsPostsLoading] = useState(true);
+  const [fetchPosts, isPostsLoading, postError] = useFetching(async() => {
+      const posts = await PostService.getAll();
+      setPosts(posts);
+  })
 
   useEffect(() => {
     // this function will run only once
@@ -24,12 +28,6 @@ function App() {
   const createPost = (newPost) => {
     setPosts([...posts, newPost]);
     setModal(false);
-  }
-
-  async function fetchPosts(){
-    const posts = await PostService.getAll();
-    setPosts(posts);
-    setIsPostsLoading(false);
   }
 
   const deletePost = (post) => {
@@ -53,7 +51,9 @@ function App() {
           filter={filter}
           setFilter={setFilter}
         />
-
+        {postError && 
+          <h1>Произошла ошибка ${postError}</h1>
+        }
         {isPostsLoading
           ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader /></div>
           : <PostList posts={sortedAndSearchedPosts} title={'Список постов'} remove={deletePost}/>    
